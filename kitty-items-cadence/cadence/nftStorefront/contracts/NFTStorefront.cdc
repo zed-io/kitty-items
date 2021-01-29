@@ -34,6 +34,15 @@ pub contract NFTStorefront {
     pub event SaleOfferCompleted(saleOfferResourceID: UInt64, accepted: Bool)
 
 
+    // StorefrontStoragePath
+    // The location in storage that a Storefront resource should be located.
+    pub let StorefrontStoragePath: Path
+
+    // StorefrontStoragePath
+    // The public location for a Storefront link.
+    pub let StorefrontPublicPath: Path
+
+
     // SaleCut
     // A struct representing a recipient that must be sent a certain amount
     // of the payment when a token is sold.
@@ -46,6 +55,7 @@ pub contract NFTStorefront {
         // call receiver.borrow()!.owner.address on it.
         // This can be done efficiently in a script.
         pub let receiver: Capability<&{FungibleToken.Receiver}>
+
         // The amount of the payment FungibleToken that will be paid to the receiver.
         pub let amount: UFix64
 
@@ -62,6 +72,8 @@ pub contract NFTStorefront {
     // A struct containing a SaleOffer's data.
     //
     pub struct SaleOfferDetails {
+        // Whether this offer has been accepted or not.
+        pub(set) var accepted: Bool
         // The Type of the NonFungibleToken.NFT that is being offered.
         pub let nftType: Type
         // The ID of the NFT within that type.
@@ -70,6 +82,8 @@ pub contract NFTStorefront {
         pub let salePaymentVaultType: Type
         // The amount that must be paid in the specified FungibleToken.
         pub let salePrice: UFix64
+        // This specifies the division of payment between recipients.
+        pub let saleCuts: [SaleCut]
 
         // initializer
         //
@@ -77,33 +91,55 @@ pub contract NFTStorefront {
             nftType: Type,
             nftID: UInt64,
             salePaymentVaultType: Type,
-            salePrice: UFix64
+            saleCuts: [SaleCut]
         ) {
+            self.accepted = false
             self.nftType = nftType
             self.nftID = nftID
             self.salePaymentVaultType = salePaymentVaultType
+
+            // Store the cuts
+            assert(saleCuts.length > 0, message: "SaleOffer must have at least one payment cut recipient")
+            self.saleCuts = saleCuts
+
+            // Calculate the total price form the cuts
+            var salePrice = 0.0
+            // Perform initial check on capabilities, and calculate sale price from cut amounts.
+            for cut in self.saleCuts {
+                // Make sure we can borrow the receiver.
+                // We will check this again when the token is sold.
+                cut.receiver.borrow()
+                    ?? panic("Cannot borrow receiver")
+                // Add the cut amount to the total price
+                salePrice = salePrice + cut.amount
+            }
+            assert(salePrice > 0.0, message: "SaleOffer must have non-zero price")
+
+            // Store the calculated sale price
             self.salePrice = salePrice
         }
     }
 
 
-    // SaleOfferPublicView
-    // An interface providing a useful read-only view of a SaleOffer.
+    // SaleOfferPublic
+    // An interface providing a useful public interface to a SaleOffer.
     //
-    pub resource interface SaleOfferPublicView {
-        // 
-        pub fun isStillAvailable(): Bool
-        //- REPLACED WITH isStillAvailable
-        /*pub fun borrowNFT(): &{NonFungibleToken.INFT} {
-            post {
-                result.isInstance(self.getDetails().nftType): "token has wrong type"
-                result.id == self.getDetails().nftID: "token has wrong ID"
-            }
-        }*/
-        //- Can these just be data members?
-        pub fun getDetails(): SaleOfferDetails
-        pub fun getSaleCuts(): [SaleCut]
+    pub resource interface SaleOfferPublic {
+        // borrowNFT
+        // This will assert in the same way as the NFT standard borrowNFT()
+        // if the NFT is absent, for example if it has been sold via another offer.
+        //
+        pub fun borrowNFT(): &NonFungibleToken.NFT
 
+        // accept
+        // Accept the offer, buying the token.
+        // This pays the beneficiaries and returns the token to the buyer.
+        //
+        pub fun accept(payment: @FungibleToken.Vault): @NonFungibleToken.NFT
+
+        // getDetails
+        //
+        pub fun getDetails(): SaleOfferDetails
     }
 
 
@@ -111,7 +147,7 @@ pub contract NFTStorefront {
     // A resource that allows an NFT to be sold for an amount of a given FungibleToken,
     // and for the proceeds of that sale to be split between several recipients.
     // 
-    pub resource SaleOffer: SaleOfferPublicView {
+    pub resource SaleOffer: SaleOfferPublic {
         // The simple (non-Capability, non-complex) details of the sale
         access(self) let details: SaleOfferDetails
 
@@ -121,20 +157,17 @@ pub contract NFTStorefront {
         // way that it claims.
         access(contract) let nftProviderCapability: Capability<&{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
 
-        // This specifies the division of payment between recipients.
-        access(self) let saleCuts: [SaleCut]
-
-        //- DOES NOT WORK.
-        // isStillAvailable
-        // Check whether the the NFT offered by this SaleOffer is still contained by the
-        // collection that it will be taken from if sold.
-        // as a NonFungibleToken.NFT .
-        //  
-        pub fun isStillAvailable(): Bool {
-            let provider = self.nftProviderCapability.borrow()
-            assert(provider == nil, message: "cannot borrow nftProviderCapability")
-            //let nft = provider!.borrowNFT(self.details.nftID)
-            return true
+        // borrowNFT
+        // This will assert in the same way as the NFT standard borrowNFT()
+        // if the NFT is absent, for example if it has been sold via another offer.
+        //
+        pub fun borrowNFT(): &NonFungibleToken.NFT {
+            let ref = self.nftProviderCapability.borrow()!.borrowNFT(id: self.getDetails().nftID)
+            //- CANNOT DO THIS IN PRECONDITION: "member of restricted type is not accessible: isInstance"
+            //  result.isInstance(self.getDetails().nftType): "token has wrong type"
+            assert(ref.isInstance(self.getDetails().nftType), message: "token has wrong type")
+            assert(ref.id == self.getDetails().nftID, message: "token has wrong ID")
+            return ref as &NonFungibleToken.NFT
         }
 
         // getDetails
@@ -146,25 +179,19 @@ pub contract NFTStorefront {
             return self.details
         }
 
-        // getSaleCuts
-        // Get the cut list.
-        // Note that this provides you with a FungibleToken.Receiver for each recipient,
-        // but you could get that via the address anyway, unless it has been removed.
-        //- Should we replace this with a function that returns address instead?
-        //
-        pub fun getSaleCuts(): [SaleCut] {
-            return self.saleCuts
-        }
-
         // accept
         // Accept the offer, buying the token.
         // This pays the beneficiaries and returns the token to the buyer.
         //
         pub fun accept(payment: @FungibleToken.Vault): @NonFungibleToken.NFT {
             pre {
+                self.details.accepted == false: "offer has already been accepted"
                 payment.isInstance(self.details.salePaymentVaultType): "payment vault is not requested fungible token"
                 payment.balance == self.details.salePrice: "payment vault does not contain requested price"
             }
+
+            // Make sure the offer cannot be accepted again.
+            self.details.accepted = true
 
             // Rather than aborting the transaction if any receiver is absent when we try to pay it,
             // we send the cut to the first valid receiver.
@@ -173,7 +200,7 @@ pub contract NFTStorefront {
             var residualReceiver: &{FungibleToken.Receiver}? = nil
 
             // Pay each beneficiary their amount of the payment.
-            for cut in self.saleCuts {
+            for cut in self.details.saleCuts {
                 if let receiver = cut.receiver.borrow() {
                    let paymentCut <- payment.withdraw(amount: cut.amount)
                     receiver.deposit(from: <-paymentCut)
@@ -211,29 +238,12 @@ pub contract NFTStorefront {
             salePaymentVaultType: Type,
             saleCuts: [SaleCut]
         ) {
-            // Store the cuts
-            assert(saleCuts.length > 0, message: "SaleOffer must have at least one payment cut recipient")
-            self.saleCuts = saleCuts
-
-            // Calculate the total price form the cuts
-            var salePrice = 0.0
-            // Perform initial check on capabilities, and calculate sale price from cut amounts.
-            for cut in self.saleCuts {
-                // Make sure we can borrow the receiver.
-                // We will check this again when the token is sold.
-                cut.receiver.borrow()
-                    ?? panic("Cannot borrow receiver")
-                // Add the cut amount to the total price
-                salePrice = salePrice + cut.amount
-            }
-            assert(salePrice > 0.0, message: "SaleOffer must have non-zero price")
-
-            // Store the sale details, including the calculated price
+            // Store the sale information
             self.details = SaleOfferDetails(
                 nftType: nftType,
                 nftID: nftID,
                 salePaymentVaultType: salePaymentVaultType,
-                salePrice: salePrice
+                saleCuts: saleCuts
             )
 
             // Store the NFT provider
@@ -254,9 +264,12 @@ pub contract NFTStorefront {
 
     // StorefrontManager
     // An interface for adding and removing SaleOffers within a Storefront,
-    // intended for use by the Storefront's owner.
+    // intended for use by the Storefront's own
     //
     pub resource interface StorefrontManager {
+        // createSaleOffer
+        // Allows the Storefront owner to create and insert SaleOffers.
+        //
         pub fun createSaleOffer(
             nftProviderCapability: Capability<&{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>,
             nftType: Type,
@@ -264,6 +277,9 @@ pub contract NFTStorefront {
             salePaymentVaultType: Type,
             saleCuts: [SaleCut]
         ): UInt64
+        // removeSaleOffer
+        // Allows the Storefront owner to remove any sale offer, acepted or not.
+        //
         pub fun removeSaleOffer(saleOfferResourceID: UInt64)
     }
 
@@ -273,12 +289,8 @@ pub contract NFTStorefront {
     //
     pub resource interface StorefrontPublic {
         pub fun getSaleOfferIDs(): [UInt64]
-        pub fun borrowSaleOffer(saleOfferResourceID: UInt64): &SaleOffer{SaleOfferPublicView}
-        //- call on the borrowed object, which then notifies the containing object?
-        pub fun accept(
-            saleOfferResourceID: UInt64,
-            buyerPayment: @FungibleToken.Vault
-        ): @NonFungibleToken.NFT
+        pub fun borrowSaleOffer(saleOfferResourceID: UInt64): &SaleOffer{SaleOfferPublic}?
+        pub fun cleanup(saleOfferResourceID: UInt64)
    }
 
     // Storefront
@@ -330,31 +342,6 @@ pub contract NFTStorefront {
     
             destroy offer
         }
- 
-        // accept
-        // If the caller passes a valid saleOfferResourceID, and the item is still for sale,
-        //  and the caller passes a Vault typed as a FungibleToken.Vault (FungibleToken.deposit()
-        //  handles the type safety of this) containing the correct payment amount,
-        // this will transfer the NFT to the caller's NFT collection.
-        // It will then remove and destroy the offer from the list of offers.
-        //
-        pub fun accept(
-            saleOfferResourceID: UInt64,
-            buyerPayment: @FungibleToken.Vault
-        ): @NonFungibleToken.NFT {
-            pre {
-                self.saleOffers[saleOfferResourceID] != nil: "SaleOffer does not exist in the collection!"
-            }
-
-            let offer <- self.saleOffers.remove(key: saleOfferResourceID) ?? panic("missing SaleOffer")
-            let nft <- offer.accept(payment: <-buyerPayment)
-
-            emit SaleOfferCompleted(saleOfferResourceID: offer.uuid, accepted: true)
-
-            destroy offer
-
-            return <-nft
-        }
 
         // getSaleOfferIDs
         // Returns an array of the SaleOffer resource IDs that are in the collection
@@ -365,13 +352,29 @@ pub contract NFTStorefront {
 
         // borrowSaleItem
         // Returns a read-only view of the SaleItem for the given saleOfferID if it is contained by this collection.
-        //- Should this be an optional, or should there be an isStillAvailable()-style existence check?
         //
-        pub fun borrowSaleOffer(saleOfferResourceID: UInt64): &SaleOffer{SaleOfferPublicView} {
-            pre {
-                self.saleOffers[saleOfferResourceID] != nil: "SaleOffer does not exist in the collection!"
+        pub fun borrowSaleOffer(saleOfferResourceID: UInt64): &SaleOffer{SaleOfferPublic}? {
+            if self.saleOffers[saleOfferResourceID] != nil {
+                return &self.saleOffers[saleOfferResourceID] as! &SaleOffer{SaleOfferPublic}
+            } else {
+                return nil
             }
-            return &self.saleOffers[saleOfferResourceID] as &SaleOffer{SaleOfferPublicView}
+        }
+
+        // cleanup
+        // Remove an offer *if* it has been accepted.
+        // Anyone can call, but at present it only benefits the account owner to do so.
+        // Kind purchasers can however call it if they like.
+        //
+        pub fun cleanup(saleOfferResourceID: UInt64) {
+            pre {
+                self.saleOffers[saleOfferResourceID] != nil: "could not find offer with given id"
+                //- DETE DID THIS!  self.saleOffers[saleOfferResourceID]!.isAccepted(): "offer is not accepted, only admin can remove"
+            }
+
+            let offer <- self.saleOffers.remove(key: saleOfferResourceID)!
+            assert(offer.getDetails().accepted == true, message: "offer is not accepted, only admin can remove")
+            destroy offer
         }
 
         // destructor
@@ -390,7 +393,12 @@ pub contract NFTStorefront {
     // createStorefront
     // Make creating a Storefront publicly accessible.
     //
-    pub fun createStorefont(): @Storefront {
+    pub fun createStorefront(): @Storefront {
         return <-create Storefront()
+    }
+
+    init () {
+        self.StorefrontStoragePath = /storage/NFTStorefront
+        self.StorefrontPublicPath = /public/NFTStorefront
     }
 }

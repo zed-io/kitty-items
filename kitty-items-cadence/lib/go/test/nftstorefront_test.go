@@ -18,12 +18,14 @@ import (
 )
 
 const (
-	nftStorefrontRootPath          = "../../../cadence/nftStorefront"
-	nftStorefrontNftStorefrontPath = nftStorefrontRootPath + "/contracts/nftStorefront.cdc"
-	nftStorefrontSetupAccountPath  = nftStorefrontRootPath + "/transactions/setup_account.cdc"
-	nftStorefrontSellItemPath      = nftStorefrontRootPath + "/transactions/sell_item.cdc"
-	nftStorefrontBuyItemPath       = nftStorefrontRootPath + "/transactions/buy_item.cdc"
-	nftStorefrontRemoveItemPath    = nftStorefrontRootPath + "/transactions/remove_item.cdc"
+	nftStorefrontRootPath            = "../../../cadence/nftStorefront"
+	nftStorefrontNftStorefrontPath   = nftStorefrontRootPath + "/contracts/nftStorefront.cdc"
+	nftStorefrontSetupAccountPath    = nftStorefrontRootPath + "/transactions/setup_account.cdc"
+	nftStorefrontSellItemPath        = nftStorefrontRootPath + "/transactions/sell_item.cdc"
+	nftStorefrontBuyItemPath         = nftStorefrontRootPath + "/transactions/buy_item.cdc"
+	nftStorefrontRemoveItemPath      = nftStorefrontRootPath + "/transactions/remove_item.cdc"
+	nftStorefrontGetIDsPath          = nftStorefrontRootPath + "/scripts/read_storefront_ids.cdc"
+	nftStorefrontGetOfferDetailsPath = nftStorefrontRootPath + "/scripts/read_sale_offer_details.cdc"
 )
 
 type TestNftContractsInfo struct {
@@ -411,6 +413,20 @@ func nftStorefrontGenerateBuyItemScript(contracts TestNftContractsInfo) []byte {
 func nftStorefrontGenerateRemoveItemScript(contracts TestNftContractsInfo) []byte {
 	return replaceNftStorefrontAddressPlaceholders(
 		readFile(nftStorefrontRemoveItemPath),
+		contracts,
+	)
+}
+
+func nftStorefrontGenerateGetIDsScript(contracts TestNftContractsInfo) []byte {
+	return replaceNftStorefrontAddressPlaceholders(
+		readFile(nftStorefrontGetIDsPath),
+		contracts,
+	)
+}
+
+func nftStorefrontGenerateGetOfferDetailsScript(contracts TestNftContractsInfo) []byte {
+	return replaceNftStorefrontAddressPlaceholders(
+		readFile(nftStorefrontGetOfferDetailsPath),
 		contracts,
 	)
 }

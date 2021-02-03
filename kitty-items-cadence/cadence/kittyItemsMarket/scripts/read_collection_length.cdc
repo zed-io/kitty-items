@@ -1,6 +1,6 @@
 import KittyItemsMarket from 0xKITTYMARKET
 
-// This transaction gets the length of an account's nft collection
+// This script gets the length of an account's nft collection
 
 pub fun main(account: Address): Int {
     let acct = getAccount(account)

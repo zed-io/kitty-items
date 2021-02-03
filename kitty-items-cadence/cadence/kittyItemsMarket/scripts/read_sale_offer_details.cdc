@@ -1,6 +1,6 @@
 import KittyItemsMarket from 0xKITTYMARKET
 
-// This transaction returns an array of all the nft ids fro sale in the collection
+// This script returns the details for a sale item in a collection
 
 pub fun main(account: Address, saleItemID: UInt64): [UInt64] {
     let acct = getAccount(account)

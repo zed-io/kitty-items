@@ -1,6 +1,6 @@
 import NFTStorefront from 0xNFTSTOREFRONT
 
-// This transaction returns an array of all the nft uuids for sale through the Storefront
+// This script returns an array of all the nft uuids for sale through a Storefront
 
 pub fun main(account: Address): [UInt64] {
     let storefrontRef = acct

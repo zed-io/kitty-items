@@ -175,17 +175,6 @@ export function Page() {
                 <AccountItemsCount address={address} />
               </Suspense>
             </Tab>
-            {/* {cu.addr === address && (
-              <Tab fontSize="2xl">
-                <HStack>
-                  <Image src={BackPack} />
-                  <Box>Store</Box>
-                </HStack>
-                <Suspense fallback={null}>
-                  <StoreItemsCount />
-                </Suspense>
-              </Tab>
-            )} */}
           </TabList>
 
           <TabPanels>
@@ -195,11 +184,6 @@ export function Page() {
             <TabPanel>
               <AccountItemsCluster address={address} />
             </TabPanel>
-            {/* {cu.addr === address && (
-              <TabPanel>
-                <MarketItemsCluster address={STORE_ADDRESS} />
-              </TabPanel>
-            )} */}
           </TabPanels>
         </Tabs>
       </Box>

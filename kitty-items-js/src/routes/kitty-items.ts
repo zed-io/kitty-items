@@ -11,8 +11,8 @@ function initKittyItemsRouter(kittyItemsService: KittyItemsService): Router {
     [body("recipient").exists(), body("typeId").isInt()],
     validateRequest,
     async (req: Request, res: Response) => {
-      const { recipient, typeId } = req.body;
-      const tx = await kittyItemsService.mint(recipient, typeId);
+      const { recipient, typeId, imageUrl } = req.body;
+      const tx = await kittyItemsService.mint(recipient, typeId, imageUrl);
       return res.send({
         transaction: tx,
       });

@@ -121,7 +121,8 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "recipient": "0x{YOUR_TESTNET_ADDRESS}",
-    "typeId": 1
+    "typeId": 1,
+    "imageUrl": "https://www.cryptokitties.co/icons/logo-hover.gif"
   }'
 ```
 

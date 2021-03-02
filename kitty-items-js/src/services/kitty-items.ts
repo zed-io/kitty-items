@@ -32,7 +32,7 @@ class KittyItemsService {
     });
   };
 
-  mint = async (recipient: string, typeId: number) => {
+  mint = async (recipient: string, typeId: number, imageUrl: string) => {
     const authorization = this.flowService.authorizeMinter();
     const transaction = fs
       .readFileSync(
@@ -46,7 +46,11 @@ class KittyItemsService {
       .replace("\"../../contracts/KittyItems.cdc\"", `0x${this.kittyItemsAddress}`);
     return this.flowService.sendTx({
       transaction,
-      args: [fcl.arg(recipient, t.Address), fcl.arg(typeId, t.UInt64)],
+      args: [
+        fcl.arg(recipient, t.Address),
+        fcl.arg(typeId, t.UInt64),
+        fcl.arg(imageUrl, t.String),
+      ],
       authorizations: [authorization],
       payer: authorization,
       proposer: authorization,

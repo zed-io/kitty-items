@@ -3,11 +3,11 @@
 # Setup minter account
 
 curl --request POST \
-  --url http://localhost:3000/v1/kibbles/setup \
+  --url http://localhost:3000/v1/culture-tokens/setup \
   --header 'Content-Type: application/json'
 
 curl --request POST \
-  --url http://localhost:3000/v1/kitty-items/setup \
+  --url http://localhost:3000/v1/cultural-items/setup \
   --header 'Content-Type: application/json'
 
 curl --request POST \
@@ -17,7 +17,7 @@ curl --request POST \
 # Mint Kibble and Kitty Items
 
 curl --request POST \
-  --url http://localhost:3000/v1/kibbles/mint \
+  --url http://localhost:3000/v1/culture-tokens/mint \
   --header 'Content-Type: application/json' \
   --data '{
     "recipient": "'$FLOW_ADDRESS'",
@@ -25,11 +25,12 @@ curl --request POST \
   }'
 
 curl --request POST \
-  --url http://localhost:3000/v1/kitty-items/mint \
+  --url http://localhost:3000/v1/cultural-items/mint \
   --header 'Content-Type: application/json' \
   --data '{
     "recipient": "'$FLOW_ADDRESS'",
-    "typeId": 1
+    "typeId": 1,
+    "name": "Machel Diaper"
   }'
 
 curl --request POST \

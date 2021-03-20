@@ -6,9 +6,9 @@
     }
   },
   "contracts": {
-    "Kibble": "./cadence/contracts/Kibble.cdc",
-    "KittyItems": "./cadence/contracts/KittyItems.cdc",
-    "KittyItemsMarket": "./cadence/contracts/KittyItemsMarket.cdc",
+    "CultureToken": "./cadence/contracts/CultureToken.cdc",
+    "CulturalItems": "./cadence/contracts/CulturalItems.cdc",
+    "CulturalItemsMarket": "./cadence/contracts/CulturalItemsMarket.cdc",
     "FungibleToken": {
       "source": "./cadence/contracts/FungibleToken.cdc",
       "aliases": {
@@ -45,7 +45,11 @@
   },
   "deployments": {
     "testnet": {
-      "testnet-account": ["Kibble", "KittyItems", "KittyItemsMarket"]
+      "testnet-account": [
+        "CultureToken",
+        "CulturalItems",
+        "CulturalItemsMarket"
+      ]
     }
   }
 }

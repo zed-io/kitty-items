@@ -1,38 +1,44 @@
 import express, { Request, Response, Router } from "express";
-import { KittyItemsService } from "../services/kitty-items";
+import { CulturalItemsService } from "../services/cultural-items";
 import { body } from "express-validator";
 import { validateRequest } from "../middlewares/validate-request";
 
-function initKittyItemsRouter(kittyItemsService: KittyItemsService): Router {
+function initCulturalItemsRouter(
+  culturalItemsService: CulturalItemsService
+): Router {
   const router = express.Router();
 
   router.post(
-    "/kitty-items/mint",
-    [body("recipient").exists(), body("typeId").isInt()],
+    "/cultural-items/mint",
+    [
+      body("recipient").exists(),
+      body("typeId").isInt(),
+      body("name").isString(),
+    ],
     validateRequest,
     async (req: Request, res: Response) => {
-      const { recipient, typeId } = req.body;
-      const tx = await kittyItemsService.mint(recipient, typeId);
+      const { recipient, typeId, name } = req.body;
+      const tx = await culturalItemsService.mint(recipient, typeId, name);
       return res.send({
         transaction: tx,
       });
     }
   );
 
-  router.post("/kitty-items/setup", async (req: Request, res: Response) => {
-    const transaction = await kittyItemsService.setupAccount();
+  router.post("/cultural-items/setup", async (req: Request, res: Response) => {
+    const transaction = await culturalItemsService.setupAccount();
     return res.send({
       transaction,
     });
   });
 
   router.post(
-    "/kitty-items/transfer",
+    "/cultural-items/transfer",
     [body("recipient").exists(), body("itemId").isInt()],
     validateRequest,
     async (req: Request, res: Response) => {
       const { recipient, itemId } = req.body;
-      const tx = await kittyItemsService.transfer(recipient, itemId);
+      const tx = await culturalItemsService.transfer(recipient, itemId);
       return res.send({
         transaction: tx,
       });
@@ -40,9 +46,9 @@ function initKittyItemsRouter(kittyItemsService: KittyItemsService): Router {
   );
 
   router.get(
-    "/kitty-items/collection/:account",
+    "/cultural-items/collection/:account",
     async (req: Request, res: Response) => {
-      const collection = await kittyItemsService.getCollectionIds(
+      const collection = await culturalItemsService.getCollectionIds(
         req.params.account
       );
       return res.send({
@@ -52,9 +58,9 @@ function initKittyItemsRouter(kittyItemsService: KittyItemsService): Router {
   );
 
   router.get(
-    "/kitty-items/item/:itemId",
+    "/cultural-items/item/:itemId",
     async (req: Request, res: Response) => {
-      const item = await kittyItemsService.getKittyItemType(
+      const item = await culturalItemsService.getCulturalItemType(
         parseInt(req.params.itemId)
       );
       return res.send({
@@ -63,8 +69,8 @@ function initKittyItemsRouter(kittyItemsService: KittyItemsService): Router {
     }
   );
 
-  router.get("/kitty-items/supply", async (req: Request, res: Response) => {
-    const supply = await kittyItemsService.getSupply();
+  router.get("/cultural-items/supply", async (req: Request, res: Response) => {
+    const supply = await culturalItemsService.getSupply();
     return res.send({
       supply,
     });
@@ -73,4 +79,4 @@ function initKittyItemsRouter(kittyItemsService: KittyItemsService): Router {
   return router;
 }
 
-export default initKittyItemsRouter;
+export default initCulturalItemsRouter;

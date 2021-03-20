@@ -1,11 +1,11 @@
-import Kibble from "./Kibble.cdc"
-import KittyItems from "./KittyItems.cdc"
+import CultureToken from "./CultureToken.cdc"
+import CulturalItems from "./CulturalItems.cdc"
 import FungibleToken from "./FungibleToken.cdc"
 import NonFungibleToken from "./NonFungibleToken.cdc"
 
 /*
-    This is a simple KittyItems initial sale contract for the DApp to use
-    in order to list and sell KittyItems.
+    This is a simple CulturalItems initial sale contract for the DApp to use
+    in order to list and sell CulturalItems.
 
     Its structure is neither what it would be if it was the simplest possible
     marjet contract or if it was a complete general purpose market contract.
@@ -27,7 +27,7 @@ import NonFungibleToken from "./NonFungibleToken.cdc"
 
  */
 
-pub contract KittyItemsMarket {
+pub contract CulturalItemsMarket {
     // SaleOffer events.
     //
     // A sale offer has been created.
@@ -59,28 +59,28 @@ pub contract KittyItemsMarket {
     }
 
     // SaleOffer
-    // A KittyItems NFT being offered to sale for a set fee paid in Kibble.
+    // A CulturalItems NFT being offered to sale for a set fee paid in CultureToken.
     //
     pub resource SaleOffer: SaleOfferPublicView {
         // Whether the sale has completed with someone purchasing the item.
         pub var saleCompleted: Bool
 
-        // The KittyItems NFT ID for sale.
+        // The CulturalItems NFT ID for sale.
         pub let saleItemID: UInt64
         // The collection containing that ID.
-        access(self) let sellerItemProvider: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>
+        access(self) let sellerItemProvider: Capability<&CulturalItems.Collection{NonFungibleToken.Provider}>
 
         // The sale payment price.
         pub let salePrice: UFix64
-        // The Kibble vault that will receive that payment if teh sale completes successfully.
-        access(self) let sellerPaymentReceiver: Capability<&Kibble.Vault{FungibleToken.Receiver}>
+        // The CultureToken vault that will receive that payment if teh sale completes successfully.
+        access(self) let sellerPaymentReceiver: Capability<&CultureToken.Vault{FungibleToken.Receiver}>
 
         // Called by a purchaser to accept the sale offer.
-        // If they send the correct payment in Kibble, and if the item is still available,
-        // the KittyItems NFT will be placed in their KittyItems.Collection .
+        // If they send the correct payment in CultureToken, and if the item is still available,
+        // the CulturalItems NFT will be placed in their CulturalItems.Collection .
         //
         pub fun accept(
-            buyerCollection: &KittyItems.Collection{NonFungibleToken.Receiver},
+            buyerCollection: &CulturalItems.Collection{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         ) {
             pre {
@@ -107,12 +107,12 @@ pub contract KittyItemsMarket {
 
         // initializer
         // Take the information required to create a sale offer, notably the capability
-        // to transfer the KittyItems NFT and the capability to receive Kibble in payment.
+        // to transfer the CulturalItems NFT and the capability to receive CultureToken in payment.
         //
         init(
-            sellerItemProvider: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>,
+            sellerItemProvider: Capability<&CulturalItems.Collection{NonFungibleToken.Provider}>,
             saleItemID: UInt64,
-            sellerPaymentReceiver: Capability<&Kibble.Vault{FungibleToken.Receiver}>,
+            sellerPaymentReceiver: Capability<&CultureToken.Vault{FungibleToken.Receiver}>,
             salePrice: UFix64
         ) {
             pre {
@@ -136,9 +136,9 @@ pub contract KittyItemsMarket {
     // Make creating a SaleOffer publicly accessible.
     //
     pub fun createSaleOffer (
-        sellerItemProvider: Capability<&KittyItems.Collection{NonFungibleToken.Provider}>,
+        sellerItemProvider: Capability<&CulturalItems.Collection{NonFungibleToken.Provider}>,
         saleItemID: UInt64,
-        sellerPaymentReceiver: Capability<&Kibble.Vault{FungibleToken.Receiver}>,
+        sellerPaymentReceiver: Capability<&CultureToken.Vault{FungibleToken.Receiver}>,
         salePrice: UFix64
     ): @SaleOffer {
         return <-create SaleOffer(
@@ -154,7 +154,7 @@ pub contract KittyItemsMarket {
     // use by the collection's owner.
     //
     pub resource interface CollectionManager {
-        pub fun insert(offer: @KittyItemsMarket.SaleOffer)
+        pub fun insert(offer: @CulturalItemsMarket.SaleOffer)
         pub fun remove(saleItemID: UInt64): @SaleOffer 
     }
 
@@ -166,7 +166,7 @@ pub contract KittyItemsMarket {
     pub resource interface CollectionPurchaser {
         pub fun purchase(
             saleItemID: UInt64,
-            buyerCollection: &KittyItems.Collection{NonFungibleToken.Receiver},
+            buyerCollection: &CulturalItems.Collection{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         )
     }
@@ -179,7 +179,7 @@ pub contract KittyItemsMarket {
         pub fun borrowSaleItem(saleItemID: UInt64): &SaleOffer{SaleOfferPublicView}?
         pub fun purchase(
             saleItemID: UInt64,
-            buyerCollection: &KittyItems.Collection{NonFungibleToken.Receiver},
+            buyerCollection: &CulturalItems.Collection{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         )
    }
@@ -193,7 +193,7 @@ pub contract KittyItemsMarket {
         // insert
         // Insert a SaleOffer into the collection, replacing one with the same saleItemID if present.
         //
-         pub fun insert(offer: @KittyItemsMarket.SaleOffer) {
+         pub fun insert(offer: @CulturalItemsMarket.SaleOffer) {
             let id: UInt64 = offer.saleItemID
 
             // add the new offer to the dictionary which removes the old one
@@ -211,20 +211,20 @@ pub contract KittyItemsMarket {
         }
  
         // purchase
-        // If the caller passes a valid saleItemID and the item is still for sale, and passes a Kibble vault
-        // typed as a FungibleToken.Vault (Kibble.deposit() handles the type safety of this)
-        // containing the correct payment amount, this will transfer the KittyItem to the caller's
-        // KittyItems collection.
+        // If the caller passes a valid saleItemID and the item is still for sale, and passes a CultureToken vault
+        // typed as a FungibleToken.Vault (CultureToken.deposit() handles the type safety of this)
+        // containing the correct payment amount, this will transfer the CulturalItem to the caller's
+        // CulturalItems collection.
         // It will then remove and destroy the offer.
         // Note that is means that events will be emitted in this order:
         //   1. Collection.CollectionRemovedSaleOffer
-        //   2. KittyItems.Withdraw
-        //   3. KittyItems.Deposit
+        //   2. CulturalItems.Withdraw
+        //   3. CulturalItems.Deposit
         //   4. SaleOffer.SaleOfferFinished
         //
         pub fun purchase(
             saleItemID: UInt64,
-            buyerCollection: &KittyItems.Collection{NonFungibleToken.Receiver},
+            buyerCollection: &CulturalItems.Collection{NonFungibleToken.Receiver},
             buyerPayment: @FungibleToken.Vault
         ) {
             pre {
@@ -277,7 +277,7 @@ pub contract KittyItemsMarket {
 
     init () {
         //FIXME: REMOVE SUFFIX BEFORE RELEASE
-        self.CollectionStoragePath = /storage/kittyItemsMarketCollection001
-        self.CollectionPublicPath = /public/kittyItemsMarketCollection001
+        self.CollectionStoragePath = /storage/culturalItemsMarketCollection001
+        self.CollectionPublicPath = /public/culturalItemsMarketCollection001
     }
 }

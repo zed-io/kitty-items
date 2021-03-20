@@ -33,6 +33,9 @@ export function MarketItemCluster({address, id}) {
           <Text>#{item.id}</Text>
         </Flex>
       </Td>
+      <Td>
+        <Text>{item.metadata.name}</Text>
+      </Td>
       <Td>({item.type})</Td>
       <Td>
         <ItemImage type={item.type} />

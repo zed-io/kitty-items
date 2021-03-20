@@ -10,18 +10,20 @@ pub struct Item {
   pub let id: UInt64
   pub let type: UInt64
   pub let owner: Address
+  pub let metadata: {String: String}
 
-  init(id: UInt64, type: UInt64, owner: Address) {
+  init(id: UInt64, type: UInt64, owner: Address, metadata: {String: String}) {
     self.id = id
     self.type = type
     self.owner = owner
+    self.metadata = metadata
   }
 }
 
 pub fun fetch(address: Address, id: UInt64): Item? {
   if let col = getAccount(address).getCapability<&KittyItems.Collection{NonFungibleToken.CollectionPublic, KittyItems.KittyItemsCollectionPublic}>(KittyItems.CollectionPublicPath).borrow() {
     if let item = col.borrowKittyItem(id: id) {
-      return Item(id: id, type: item.typeID, owner: address)
+      return Item(id: id, type: item.typeID, owner: address, metadata: item.metadata)
     }
   }
 

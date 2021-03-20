@@ -23,6 +23,7 @@ export function MarketItemsCluster({address}) {
         <Thead>
           <Tr>
             <Th>Id</Th>
+            <Th>Name</Th>
             <Th>Type</Th>
             <Th>Image</Th>
             <Th isNumeric>Price</Th>

@@ -4,14 +4,14 @@ import { FlowService } from "./flow";
 import * as fs from "fs";
 import * as path from "path";
 
-const fungibleTokenPath = "\"../../contracts/FungibleToken.cdc\"";
-const kibblePath = "\"../../contracts/Kibble.cdc\"";
+const fungibleTokenPath = '"../../contracts/FungibleToken.cdc"';
+const cultureTokenPath = '"../../contracts/CultureToken.cdc"';
 
-class KibblesService {
+class CultureTokensService {
   constructor(
     private readonly flowService: FlowService,
     private readonly fungibleTokenAddress: string,
-    private readonly kibbleAddress: string
+    private readonly cultureTokenAddress: string
   ) {}
 
   setupAccount = async () => {
@@ -21,12 +21,12 @@ class KibblesService {
       .readFileSync(
         path.join(
           __dirname,
-          "../../../cadence/transactions/kibble/setup_account.cdc"
+          "../../../cadence/transactions/cultureToken/setup_account.cdc"
         ),
         "utf8"
       )
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
-      .replace(kibblePath, fcl.withPrefix(this.kibbleAddress));
+      .replace(cultureTokenPath, fcl.withPrefix(this.cultureTokenAddress));
 
     return this.flowService.sendTx({
       transaction,
@@ -37,19 +37,19 @@ class KibblesService {
     });
   };
 
-  mint = async (recipient: string, amount: number) => {    
+  mint = async (recipient: string, amount: number) => {
     const authorization = this.flowService.authorizeMinter();
 
     const transaction = fs
       .readFileSync(
         path.join(
           __dirname,
-          "../../../cadence/transactions/kibble/mint_tokens.cdc"
+          "../../../cadence/transactions/cultureToken/mint_tokens.cdc"
         ),
         "utf8"
       )
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
-      .replace(kibblePath, fcl.withPrefix(this.kibbleAddress));
+      .replace(cultureTokenPath, fcl.withPrefix(this.cultureTokenAddress));
 
     return this.flowService.sendTx({
       transaction,
@@ -70,12 +70,12 @@ class KibblesService {
       .readFileSync(
         path.join(
           __dirname,
-          "../../../cadence/transactions/kibble/burn_tokens.cdc"
+          "../../../cadence/transactions/cultureToken/burn_tokens.cdc"
         ),
         "utf8"
       )
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
-      .replace(kibblePath, fcl.withPrefix(this.kibbleAddress));
+      .replace(cultureTokenPath, fcl.withPrefix(this.cultureTokenAddress));
 
     return this.flowService.sendTx({
       transaction,
@@ -92,12 +92,12 @@ class KibblesService {
       .readFileSync(
         path.join(
           __dirname,
-          "../../../cadence/transactions/kibble/burn_tokens.cdc"
+          "../../../cadence/transactions/cultureToken/burn_tokens.cdc"
         ),
         "utf8"
       )
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
-      .replace(kibblePath, fcl.withPrefix(this.kibbleAddress));
+      .replace(cultureTokenPath, fcl.withPrefix(this.cultureTokenAddress));
 
     return this.flowService.sendTx({
       transaction,
@@ -116,12 +116,12 @@ class KibblesService {
       .readFileSync(
         path.join(
           __dirname,
-          "../../../cadence/scripts/kibble/get_balance.cdc"
+          "../../../cadence/scripts/cultureToken/get_balance.cdc"
         ),
         "utf8"
       )
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
-      .replace(kibblePath, fcl.withPrefix(this.kibbleAddress));
+      .replace(cultureTokenPath, fcl.withPrefix(this.cultureTokenAddress));
 
     return this.flowService.executeScript<number>({
       script,
@@ -134,15 +134,15 @@ class KibblesService {
       .readFileSync(
         path.join(
           __dirname,
-          "../../../cadence/scripts/kibble/get_supply.cdc"
+          "../../../cadence/scripts/cultureToken/get_supply.cdc"
         ),
         "utf8"
       )
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
-      .replace(kibblePath, fcl.withPrefix(this.kibbleAddress));
+      .replace(cultureTokenPath, fcl.withPrefix(this.cultureTokenAddress));
 
     return this.flowService.executeScript<number>({ script, args: [] });
   };
 }
 
-export { KibblesService };
+export { CultureTokensService };

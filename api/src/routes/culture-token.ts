@@ -1,34 +1,36 @@
 import express, { Request, Response, Router } from "express";
-import { KibblesService } from "../services/kibbles";
+import { CultureTokensService } from "../services/culture-tokens";
 import { body } from "express-validator";
 import { validateRequest } from "../middlewares/validate-request";
 
-function initKibblesRouter(kibblesService: KibblesService): Router {
+function initCultureTokensRouter(
+  cultureTokensService: CultureTokensService
+): Router {
   const router = express.Router();
 
   router.post(
-    "/kibbles/mint",
+    "/culture-tokens/mint",
     [body("recipient").exists(), body("amount").isDecimal()],
     validateRequest,
     async (req: Request, res: Response) => {
       const { recipient, amount } = req.body;
 
-      const transaction = await kibblesService.mint(recipient, amount);
+      const transaction = await cultureTokensService.mint(recipient, amount);
       return res.send({
         transaction,
       });
     }
   );
 
-  router.post("/kibbles/setup", async (req: Request, res: Response) => {
-    const transaction = await kibblesService.setupAccount();
+  router.post("/culture-tokens/setup", async (req: Request, res: Response) => {
+    const transaction = await cultureTokensService.setupAccount();
     return res.send({
       transaction,
     });
   });
 
   router.post(
-    "/kibbles/burn",
+    "/culture-tokens/burn",
     [
       body("amount").isInt({
         gt: 0,
@@ -37,7 +39,7 @@ function initKibblesRouter(kibblesService: KibblesService): Router {
     validateRequest,
     async (req: Request, res: Response) => {
       const { amount } = req.body;
-      const transaction = await kibblesService.burn(amount);
+      const transaction = await cultureTokensService.burn(amount);
       return res.send({
         transaction,
       });
@@ -45,7 +47,7 @@ function initKibblesRouter(kibblesService: KibblesService): Router {
   );
 
   router.post(
-    "/kibbles/transfer",
+    "/culture-tokens/transfer",
     [
       body("recipient").exists(),
       body("amount").isInt({
@@ -55,7 +57,10 @@ function initKibblesRouter(kibblesService: KibblesService): Router {
     validateRequest,
     async (req: Request, res: Response) => {
       const { recipient, amount } = req.body;
-      const transaction = await kibblesService.transfer(recipient, amount);
+      const transaction = await cultureTokensService.transfer(
+        recipient,
+        amount
+      );
       return res.send({
         transaction,
       });
@@ -63,17 +68,17 @@ function initKibblesRouter(kibblesService: KibblesService): Router {
   );
 
   router.get(
-    "/kibbles/balance/:account",
+    "/culture-tokens/balance/:account",
     async (req: Request, res: Response) => {
-      const balance = await kibblesService.getBalance(req.params.account);
+      const balance = await cultureTokensService.getBalance(req.params.account);
       return res.send({
         balance,
       });
     }
   );
 
-  router.get("/kibbles/supply", async (req: Request, res: Response) => {
-    const supply = await kibblesService.getSupply();
+  router.get("/culture-tokens/supply", async (req: Request, res: Response) => {
+    const supply = await cultureTokensService.getSupply();
     return res.send({
       supply,
     });
@@ -82,4 +87,4 @@ function initKibblesRouter(kibblesService: KibblesService): Router {
   return router;
 }
 
-export default initKibblesRouter;
+export default initCultureTokensRouter;

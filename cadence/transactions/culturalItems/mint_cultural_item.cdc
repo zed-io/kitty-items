@@ -6,7 +6,15 @@ import CulturalItems from "../../contracts/CulturalItems.cdc"
 // It must be run with the account that has the minter resource
 // stored at path /storage/NFTMinter.
 
-transaction(recipient: Address, typeID: UInt64, metadata: {String: String}) {
+transaction(
+    recipient: Address, 
+    name: String,
+    description: String,
+    year: String,
+    country: String,
+    culturalSignificance: String,
+    metadata: {String: String}
+) {
     
     // local variable for storing the minter reference
     let minter: &CulturalItems.NFTMinter
@@ -29,6 +37,14 @@ transaction(recipient: Address, typeID: UInt64, metadata: {String: String}) {
             ?? panic("Could not get receiver reference to the NFT Collection")
 
         // mint the NFT and deposit it to the recipient's collection
-        self.minter.mintNFT(recipient: receiver, typeID: typeID, metadata: metadata)
+        self.minter.mintNFT(
+            recipient: receiver,
+            name: name,
+            description: description,
+            year: year,
+            country: country,
+            culturalSignificance: culturalSignificance,
+            metadata: metadata
+        )
     }
 }

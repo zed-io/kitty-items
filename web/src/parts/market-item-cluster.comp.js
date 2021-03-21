@@ -14,7 +14,7 @@ import {
   HStack,
 } from "@chakra-ui/react"
 
-import {ItemImage} from "./account-item-cluster.comp"
+// import {ItemImage} from "./account-item-cluster.comp"
 
 export function MarketItemCluster({address, id}) {
   const item = useAccountItem(address, id)
@@ -34,12 +34,14 @@ export function MarketItemCluster({address, id}) {
         </Flex>
       </Td>
       <Td>
-        <Text>{item.metadata.name}</Text>
+        <Text>{item.name}</Text>
       </Td>
-      <Td>({item.type})</Td>
       <Td>
-        <ItemImage type={item.type} />
+        <Text>{item.country}</Text>
       </Td>
+      {/* <Td>
+        <ItemImage type={item.type} />
+      </Td> */}
       <Td isNumeric>{item.price || 10}</Td>
       {loggedIn && (
         <>

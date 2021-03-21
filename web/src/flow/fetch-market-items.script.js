@@ -2,10 +2,10 @@ import * as fcl from "@onflow/fcl"
 import * as t from "@onflow/types"
 
 const CODE = fcl.cdc`
-  import KittyItemsMarket from 0xKittyItemsMarket
+  import CulturalItemsMarket from 0xCulturalItemsMarket
 
   pub fun main(address: Address): [UInt64] {
-    if let col = getAccount(address).getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath).borrow() {
+    if let col = getAccount(address).getCapability<&CulturalItemsMarket.Collection{CulturalItemsMarket.CollectionPublic}>(CulturalItemsMarket.CollectionPublicPath).borrow() {
       return col.getSaleOfferIDs()
     } 
     

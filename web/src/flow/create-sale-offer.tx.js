@@ -5,28 +5,28 @@ import {tx} from "./util/tx"
 const CODE = fcl.cdc`
   import FungibleToken from 0xFungibleToken
   import NonFungibleToken from 0xNonFungibleToken
-  import Kibble from 0xKibble
-  import KittyItems from 0xKittyItems
-  import KittyItemsMarket from 0xKittyItemsMarket
+  import CultureToken from 0xCultureToken
+  import CulturalItems from 0xCulturalItems
+  import CulturalItemsMarket from 0xCulturalItemsMarket
 
   transaction(saleItemID: UInt64, salePrice: UFix64) {
     prepare(acct: AuthAccount) {
-      let market = acct.borrow<&KittyItemsMarket.Collection>(from: KittyItemsMarket.CollectionStoragePath) ?? panic("Need the marketplace resouce")
+      let market = acct.borrow<&CulturalItemsMarket.Collection>(from: CulturalItemsMarket.CollectionStoragePath) ?? panic("Need the marketplace resouce")
 
-      let sellerPaymentReceiver = acct.getCapability<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath)
+      let sellerPaymentReceiver = acct.getCapability<&CultureToken.Vault{FungibleToken.Receiver}>(CultureToken.ReceiverPublicPath)
 
-      let providerPath = /private/KittyItemsCollectionProvider
+      let providerPath = /private/CulturalItemsCollectionProvider
       acct.unlink(providerPath)
-      if !acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(providerPath).check() {
-        acct.link<&KittyItems.Collection{NonFungibleToken.Provider}>(providerPath, target: KittyItems.CollectionStoragePath)
+      if !acct.getCapability<&CulturalItems.Collection{NonFungibleToken.Provider}>(providerPath).check() {
+        acct.link<&CulturalItems.Collection{NonFungibleToken.Provider}>(providerPath, target: CulturalItems.CollectionStoragePath)
       }
-      if !acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(providerPath).check() {
-        acct.link<&KittyItems.Collection{NonFungibleToken.Provider}>(providerPath, target: KittyItems.CollectionStoragePath)
+      if !acct.getCapability<&CulturalItems.Collection{NonFungibleToken.Provider}>(providerPath).check() {
+        acct.link<&CulturalItems.Collection{NonFungibleToken.Provider}>(providerPath, target: CulturalItems.CollectionStoragePath)
       }
-      let itemProvider = acct.getCapability<&KittyItems.Collection{NonFungibleToken.Provider}>(providerPath)
-      assert(itemProvider.borrow() != nil, message: "Missing or mis-typed KittyItemsCollection provider")
+      let itemProvider = acct.getCapability<&CulturalItems.Collection{NonFungibleToken.Provider}>(providerPath)
+      assert(itemProvider.borrow() != nil, message: "Missing or mis-typed CulturalItemsCollection provider")
 
-      let offer <- KittyItemsMarket.createSaleOffer(
+      let offer <- CulturalItemsMarket.createSaleOffer(
         sellerItemProvider: itemProvider,
         saleItemID: saleItemID,
         sellerPaymentReceiver: sellerPaymentReceiver,

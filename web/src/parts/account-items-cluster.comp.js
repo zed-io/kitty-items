@@ -23,8 +23,9 @@ export function AccountItemsCluster({address}) {
         <Thead>
           <Tr>
             <Th>Id</Th>
-            <Th>Type</Th>
-            <Th>Image</Th>
+            <Th>Name</Th>
+            <Th>Country</Th>
+            {/* <Th>Image</Th> */}
             {cu.addr === address && <Th />}
           </Tr>
         </Thead>

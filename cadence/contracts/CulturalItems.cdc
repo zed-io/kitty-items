@@ -10,7 +10,15 @@ pub contract CulturalItems: NonFungibleToken {
     pub event ContractInitialized()
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
-    pub event Minted(id: UInt64, typeID: UInt64, metadata: {String: String})
+    pub event Minted(
+        id: UInt64,
+        name: String,
+        description: String,
+        year: String,
+        country: String,
+        culturalSignificance: String,
+        metadata: {String: String}
+    )
 
     // Named Paths
     //
@@ -29,16 +37,30 @@ pub contract CulturalItems: NonFungibleToken {
     pub resource NFT: NonFungibleToken.INFT {
         // The token's ID
         pub let id: UInt64
-        // The token's type, e.g. 3 == Hat
-        pub let typeID: UInt64
-        // The token's metadata
+        pub let name: String
+        pub let description: String
+        pub let year: String
+        pub let country: String
+        pub let culturalSignificance: String
         pub let metadata: {String: String}
 
         // initializer
         //
-        init(initID: UInt64, initTypeID: UInt64, initMetadata: {String: String}) {
+        init(
+            initID: UInt64,
+            initName: String,
+            initDescription: String,
+            initYear: String,
+            initCountry: String,
+            initCulturalSignificance: String,
+            initMetadata: {String: String}
+        ) {
             self.id = initID
-            self.typeID = initTypeID
+            self.name = initName
+            self.description = initDescription
+            self.year = initYear
+            self.country = initCountry
+            self.culturalSignificance = initCulturalSignificance
             self.metadata = initMetadata
         }
     }
@@ -155,11 +177,35 @@ pub contract CulturalItems: NonFungibleToken {
         // Mints a new NFT with a new ID
 		// and deposit it in the recipients collection using their collection reference
         //
-		pub fun mintNFT(recipient: &{NonFungibleToken.CollectionPublic}, typeID: UInt64, metadata: {String: String}) {
-            emit Minted(id: CulturalItems.totalSupply, typeID: typeID, metadata: metadata)
+		pub fun mintNFT(
+            recipient: &{NonFungibleToken.CollectionPublic},
+            name: String,
+            description: String,
+            year: String,
+            country: String,
+            culturalSignificance: String,
+            metadata: {String: String}
+        ) {
+            emit Minted(
+                id: CulturalItems.totalSupply,
+                name: name,
+                description: description,
+                year: year,
+                country: country,
+                culturalSignificance: culturalSignificance,
+                metadata: metadata
+            )
 
 			// deposit it in the recipient's account using their reference
-			recipient.deposit(token: <-create CulturalItems.NFT(initID: CulturalItems.totalSupply, initTypeID: typeID, initMetadata: metadata))
+			recipient.deposit(token: <-create CulturalItems.NFT(
+                initID: CulturalItems.totalSupply,
+                initName: name,
+                initDescription: description,
+                initYear: year,
+                initCountry: country,
+                initCulturalSignificance: culturalSignificance,
+                initMetadata: metadata
+            ))
 
             CulturalItems.totalSupply = CulturalItems.totalSupply + (1 as UInt64)
 		}

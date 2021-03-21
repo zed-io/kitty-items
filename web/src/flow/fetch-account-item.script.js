@@ -4,26 +4,40 @@ import {batch} from "./util/batch"
 
 const CODE = fcl.cdc`
 import NonFungibleToken from 0xNonFungibleToken
-import KittyItems from 0xKittyItems
+import CulturalItems from 0xCulturalItems
 
 pub struct Item {
   pub let id: UInt64
-  pub let type: UInt64
   pub let owner: Address
+  pub let name: String
+  pub let country: String
   pub let metadata: {String: String}
 
-  init(id: UInt64, type: UInt64, owner: Address, metadata: {String: String}) {
+  init(
+    id: UInt64,
+    owner: Address,
+    name: String,
+    country: String,
+    metadata: {String: String}
+  ) {
     self.id = id
-    self.type = type
     self.owner = owner
+    self.name = name
+    self.country = country
     self.metadata = metadata
   }
 }
 
 pub fun fetch(address: Address, id: UInt64): Item? {
-  if let col = getAccount(address).getCapability<&KittyItems.Collection{NonFungibleToken.CollectionPublic, KittyItems.KittyItemsCollectionPublic}>(KittyItems.CollectionPublicPath).borrow() {
-    if let item = col.borrowKittyItem(id: id) {
-      return Item(id: id, type: item.typeID, owner: address, metadata: item.metadata)
+  if let col = getAccount(address).getCapability<&CulturalItems.Collection{NonFungibleToken.CollectionPublic, CulturalItems.CulturalItemsCollectionPublic}>(CulturalItems.CollectionPublicPath).borrow() {
+    if let item = col.borrowCulturalItem(id: id) {
+      return Item(
+        id: id,
+        owner: address,
+        name: item.name,
+        country: item.country,
+        metadata: item.metadata
+      )
     }
   }
 

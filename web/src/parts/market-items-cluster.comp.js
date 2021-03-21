@@ -24,8 +24,8 @@ export function MarketItemsCluster({address}) {
           <Tr>
             <Th>Id</Th>
             <Th>Name</Th>
-            <Th>Type</Th>
-            <Th>Image</Th>
+            <Th>Country</Th>
+            {/* <Th>Image</Th> */}
             <Th isNumeric>Price</Th>
             {cu.addr === address ? <Th /> : null}
           </Tr>

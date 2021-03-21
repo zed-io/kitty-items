@@ -4,39 +4,39 @@ import {Address} from "@onflow/types"
 const CODE = cdc`
   import FungibleToken from 0xFungibleToken
   import NonFungibleToken from 0xNonFungibleToken
-  import Kibble from 0xKibble
-  import KittyItems from 0xKittyItems
-  import KittyItemsMarket from 0xKittyItemsMarket
+  import CultureToken from 0xCultureToken
+  import CulturalItems from 0xCulturalItems
+  import CulturalItemsMarket from 0xCulturalItemsMarket
 
-  pub fun hasKibble(_ address: Address): Bool {
+  pub fun hasCultureToken(_ address: Address): Bool {
     let receiver: Bool = getAccount(address)
-      .getCapability<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath)
+      .getCapability<&CultureToken.Vault{FungibleToken.Receiver}>(CultureToken.ReceiverPublicPath)
       .check()
 
     let balance: Bool = getAccount(address)
-      .getCapability<&Kibble.Vault{FungibleToken.Balance}>(Kibble.BalancePublicPath)
+      .getCapability<&CultureToken.Vault{FungibleToken.Balance}>(CultureToken.BalancePublicPath)
       .check()
 
     return receiver && balance
   }
 
-  pub fun hasKittyItems(_ address: Address): Bool {
+  pub fun hasCulturalItems(_ address: Address): Bool {
     return getAccount(address)
-      .getCapability<&KittyItems.Collection{NonFungibleToken.CollectionPublic, KittyItems.KittyItemsCollectionPublic}>(KittyItems.CollectionPublicPath)
+      .getCapability<&CulturalItems.Collection{NonFungibleToken.CollectionPublic, CulturalItems.CulturalItemsCollectionPublic}>(CulturalItems.CollectionPublicPath)
       .check()
   }
 
-  pub fun hasKittyItemsMarket(_ address: Address): Bool {
+  pub fun hasCulturalItemsMarket(_ address: Address): Bool {
     return getAccount(address)
-      .getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath)
+      .getCapability<&CulturalItemsMarket.Collection{CulturalItemsMarket.CollectionPublic}>(CulturalItemsMarket.CollectionPublicPath)
       .check()
   }
 
   pub fun main(address: Address): {String: Bool} {
     let ret: {String: Bool} = {}
-    ret["Kibble"] = hasKibble(address)
-    ret["KittyItems"] = hasKittyItems(address)
-    ret["KittyItemsMarket"] = hasKittyItemsMarket(address)
+    ret["CultureToken"] = hasCultureToken(address)
+    ret["CulturalItems"] = hasCulturalItems(address)
+    ret["CulturalItemsMarket"] = hasCulturalItemsMarket(address)
     return ret
   }
 `

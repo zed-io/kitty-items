@@ -6,17 +6,17 @@ import {tx} from "./util/tx"
 const CODE = cdc`
   import FungibleToken from 0xFungibleToken
   import NonFungibleToken from 0xNonFungibleToken
-  import Kibble from 0xKibble
-  import KittyItems from 0xKittyItems
-  import KittyItemsMarket from 0xKittyItemsMarket
+  import CultureToken from 0xCultureToken
+  import CulturalItems from 0xCulturalItems
+  import CulturalItemsMarket from 0xCulturalItemsMarket
 
-  pub fun hasKibble(_ address: Address): Bool {
+  pub fun hasCultureToken(_ address: Address): Bool {
     let receiver = getAccount(address)
-      .getCapability<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath)
+      .getCapability<&CultureToken.Vault{FungibleToken.Receiver}>(CultureToken.ReceiverPublicPath)
       .check()
 
     let balance = getAccount(address)
-      .getCapability<&Kibble.Vault{FungibleToken.Balance}>(Kibble.BalancePublicPath)
+      .getCapability<&CultureToken.Vault{FungibleToken.Balance}>(CultureToken.BalancePublicPath)
       .check()
 
     return receiver && balance
@@ -24,42 +24,42 @@ const CODE = cdc`
 
   pub fun hasItems(_ address: Address): Bool {
     return getAccount(address)
-      .getCapability<&KittyItems.Collection{NonFungibleToken.CollectionPublic, KittyItems.KittyItemsCollectionPublic}>(KittyItems.CollectionPublicPath)
+      .getCapability<&CulturalItems.Collection{NonFungibleToken.CollectionPublic, CulturalItems.CulturalItemsCollectionPublic}>(CulturalItems.CollectionPublicPath)
       .check()
   }
 
   pub fun hasMarket(_ address: Address): Bool {
     return getAccount(address)
-      .getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath)
+      .getCapability<&CulturalItemsMarket.Collection{CulturalItemsMarket.CollectionPublic}>(CulturalItemsMarket.CollectionPublicPath)
       .check()
   }
 
   transaction {
     prepare(acct: AuthAccount) {
-      if !hasKibble(acct.address) {
-        if acct.borrow<&Kibble.Vault>(from: Kibble.VaultStoragePath) == nil {
-          acct.save(<-Kibble.createEmptyVault(), to: Kibble.VaultStoragePath)
+      if !hasCultureToken(acct.address) {
+        if acct.borrow<&CultureToken.Vault>(from: CultureToken.VaultStoragePath) == nil {
+          acct.save(<-CultureToken.createEmptyVault(), to: CultureToken.VaultStoragePath)
         }
-        acct.unlink(Kibble.ReceiverPublicPath)
-        acct.unlink(Kibble.BalancePublicPath)
-        acct.link<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath, target: Kibble.VaultStoragePath)
-        acct.link<&Kibble.Vault{FungibleToken.Balance}>(Kibble.BalancePublicPath, target: Kibble.VaultStoragePath)
+        acct.unlink(CultureToken.ReceiverPublicPath)
+        acct.unlink(CultureToken.BalancePublicPath)
+        acct.link<&CultureToken.Vault{FungibleToken.Receiver}>(CultureToken.ReceiverPublicPath, target: CultureToken.VaultStoragePath)
+        acct.link<&CultureToken.Vault{FungibleToken.Balance}>(CultureToken.BalancePublicPath, target: CultureToken.VaultStoragePath)
       }
 
       if !hasItems(acct.address) {
-        if acct.borrow<&KittyItems.Collection>(from: KittyItems.CollectionStoragePath) == nil {
-          acct.save(<-KittyItems.createEmptyCollection(), to: KittyItems.CollectionStoragePath)
+        if acct.borrow<&CulturalItems.Collection>(from: CulturalItems.CollectionStoragePath) == nil {
+          acct.save(<-CulturalItems.createEmptyCollection(), to: CulturalItems.CollectionStoragePath)
         }
-        acct.unlink(KittyItems.CollectionPublicPath)
-        acct.link<&KittyItems.Collection{NonFungibleToken.CollectionPublic, KittyItems.KittyItemsCollectionPublic}>(KittyItems.CollectionPublicPath, target: KittyItems.CollectionStoragePath)
+        acct.unlink(CulturalItems.CollectionPublicPath)
+        acct.link<&CulturalItems.Collection{NonFungibleToken.CollectionPublic, CulturalItems.CulturalItemsCollectionPublic}>(CulturalItems.CollectionPublicPath, target: CulturalItems.CollectionStoragePath)
       }
 
       if !hasMarket(acct.address) {
-        if acct.borrow<&KittyItemsMarket.Collection>(from: KittyItemsMarket.CollectionStoragePath) == nil {
-          acct.save(<-KittyItemsMarket.createEmptyCollection(), to: KittyItemsMarket.CollectionStoragePath)
+        if acct.borrow<&CulturalItemsMarket.Collection>(from: CulturalItemsMarket.CollectionStoragePath) == nil {
+          acct.save(<-CulturalItemsMarket.createEmptyCollection(), to: CulturalItemsMarket.CollectionStoragePath)
         }
-        acct.unlink(KittyItemsMarket.CollectionPublicPath)
-        acct.link<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath, target:KittyItemsMarket.CollectionStoragePath)
+        acct.unlink(CulturalItemsMarket.CollectionPublicPath)
+        acct.link<&CulturalItemsMarket.Collection{CulturalItemsMarket.CollectionPublic}>(CulturalItemsMarket.CollectionPublicPath, target:CulturalItemsMarket.CollectionStoragePath)
       }
     }
   }

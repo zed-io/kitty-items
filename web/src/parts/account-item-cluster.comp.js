@@ -1,4 +1,4 @@
-import React, {useEffect, useState, Suspense} from "react"
+import React, {Suspense} from "react"
 import {useAccountItem} from "../hooks/use-account-item.hook"
 import {useMarketItem} from "../hooks/use-market-item.hook"
 import {useCurrentUser} from "../hooks/use-current-user.hook"
@@ -11,23 +11,22 @@ import {
   Flex,
   Center,
   Text,
-  Image,
   HStack,
 } from "@chakra-ui/react"
 
-export const ItemImage = ({type}) => {
-  let [item, setItemImage] = useState("")
+// export const ItemImage = ({type}) => {
+//   let [item, setItemImage] = useState("")
 
-  useEffect(() => {
-    async function getImage() {
-      let importedIcon = await import(`../svg/Items/item0${type}.svg`)
-      setItemImage(importedIcon.default)
-    }
-    getImage()
-  }, [type])
+//   useEffect(() => {
+//     async function getImage() {
+//       let importedIcon = await import(`../svg/Items/item0${type}.svg`)
+//       setItemImage(importedIcon.default)
+//     }
+//     getImage()
+//   }, [type])
 
-  return <Image maxW="64px" src={item} />
-}
+//   return <Image maxW="64px" src={item} />
+// }
 
 export function AccountItemCluster({address, id}) {
   const item = useAccountItem(address, id)
@@ -46,10 +45,15 @@ export function AccountItemCluster({address, id}) {
           <Text as={item.forSale && "del"}>#{item.id}</Text>
         </Flex>
       </Td>
-      <Td>({item.type})</Td>
       <Td>
-        <ItemImage type={item.type} />
+        <Text>{item.name}</Text>
       </Td>
+      <Td>
+        <Text>{item.country}</Text>
+      </Td>
+      {/* <Td>
+        <ItemImage type={item.type} />
+      </Td> */}
       {cu.addr === address && (
         <>
           {!item.forSale ? (

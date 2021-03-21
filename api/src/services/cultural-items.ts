@@ -40,7 +40,15 @@ class CulturalItemsService {
     });
   };
 
-  mint = async (recipient: string, typeId: number, name: string) => {
+  mint = async (
+    recipient: string,
+    name: string,
+    description: string,
+    year: string,
+    country: string,
+    culturalSignificance: string,
+    metadata: Record<string, string>
+  ) => {
     const authorization = this.flowService.authorizeMinter();
 
     const transaction = fs
@@ -61,10 +69,19 @@ class CulturalItemsService {
       transaction,
       args: [
         fcl.arg(recipient, t.Address),
-        fcl.arg(typeId, t.UInt64),
+        fcl.arg(name, t.String),
+        fcl.arg(description, t.String),
+        fcl.arg(year, t.String),
+        fcl.arg(country, t.String),
+        fcl.arg(culturalSignificance, t.String),
         fcl.arg(
-          [{ key: "name", value: name }],
-          t.Dictionary([{ key: t.String, value: t.String }])
+          Object.keys(metadata).map((key) => ({ key, value: metadata[key] })),
+          t.Dictionary(
+            Array(Object.keys(metadata).length).fill({
+              key: t.String,
+              value: t.String,
+            })
+          )
         ),
       ],
       authorizations: [authorization],

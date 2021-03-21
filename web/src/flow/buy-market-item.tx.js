@@ -6,35 +6,35 @@ import {invariant} from "@onflow/util-invariant"
 const CODE = fcl.cdc`
   import FungibleToken from 0xFungibleToken
   import NonFungibleToken from 0xNonFungibleToken
-  import Kibble from 0xKibble
-  import KittyItems from 0xKittyItems
-  import KittyItemsMarket from 0xKittyItemsMarket
+  import CultureToken from 0xCultureToken
+  import CulturalItems from 0xCulturalItems
+  import CulturalItemsMarket from 0xCulturalItemsMarket
 
   transaction(saleItemID: UInt64, marketCollectionAddress: Address) {
       let paymentVault: @FungibleToken.Vault
-      let kittyItemsCollection: &KittyItems.Collection{NonFungibleToken.Receiver}
-      let marketCollection: &KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}
+      let culturalItemsCollection: &CulturalItems.Collection{NonFungibleToken.Receiver}
+      let marketCollection: &CulturalItemsMarket.Collection{CulturalItemsMarket.CollectionPublic}
 
       prepare(acct: AuthAccount) {
           self.marketCollection = getAccount(marketCollectionAddress)
-              .getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath)
+              .getCapability<&CulturalItemsMarket.Collection{CulturalItemsMarket.CollectionPublic}>(CulturalItemsMarket.CollectionPublicPath)
               .borrow() ?? panic("Could not borrow market collection from market address")
 
           let price = self.marketCollection.borrowSaleItem(saleItemID: saleItemID)!.salePrice
 
-          let mainKibbleVault = acct.borrow<&Kibble.Vault>(from: Kibble.VaultStoragePath)
-              ?? panic("Cannot borrow Kibble vault from acct storage")
-          self.paymentVault <- mainKibbleVault.withdraw(amount: price)
+          let mainCultureTokenVault = acct.borrow<&CultureToken.Vault>(from: CultureToken.VaultStoragePath)
+              ?? panic("Cannot borrow CultureToken vault from acct storage")
+          self.paymentVault <- mainCultureTokenVault.withdraw(amount: price)
 
-          self.kittyItemsCollection = acct.borrow<&KittyItems.Collection{NonFungibleToken.Receiver}>(
-              from: KittyItems.CollectionStoragePath
-          ) ?? panic("Cannot borrow KittyItems collection receiver from acct")
+          self.culturalItemsCollection = acct.borrow<&CulturalItems.Collection{NonFungibleToken.Receiver}>(
+              from: CulturalItems.CollectionStoragePath
+          ) ?? panic("Cannot borrow CulturalItems collection receiver from acct")
       }
 
       execute {
           self.marketCollection.purchase(
               saleItemID: saleItemID,
-              buyerCollection: self.kittyItemsCollection,
+              buyerCollection: self.culturalItemsCollection,
               buyerPayment: <- self.paymentVault
           )
       }

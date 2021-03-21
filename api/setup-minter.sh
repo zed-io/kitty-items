@@ -29,8 +29,12 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '{
     "recipient": "'$FLOW_ADDRESS'",
-    "typeId": 1,
-    "name": "Machel Diaper"
+    "name": "Machel Diaper",
+    "description": "The diaper that Machel Montano wore for one of his first ever performances.",
+    "year": "1984",
+    "country": "Trinidad and Tobago",
+    "culturalSignificance": "Soca",
+    "metadata": { "asset": "bafkreihxsiyfgxut6mex23kernzwkrsufvx4nh3mwx3rxkp44adrqmsp5u" }
   }'
 
 curl --request POST \

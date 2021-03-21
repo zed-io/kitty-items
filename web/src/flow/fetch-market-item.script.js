@@ -3,7 +3,7 @@ import * as t from "@onflow/types"
 // import {batch} from "./util/batch"
 
 // const CODE = fcl.cdc`
-//   import KittyItemsMarket from 0xKittyItemsMarket
+//   import CulturalItemsMarket from 0xCulturalItemsMarket
 
 //   pub struct Item {
 //     pub let id: UInt64
@@ -20,7 +20,7 @@ import * as t from "@onflow/types"
 //   }
 
 //   pub fun fetch(address: Address, id: UInt64): Item? {
-//     if let collection = getAccount(address).getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath).borrow() {
+//     if let collection = getAccount(address).getCapability<&CulturalItemsMarket.Collection{CulturalItemsMarket.CollectionPublic}>(CulturalItemsMarket.CollectionPublicPath).borrow() {
 //       if let item = collection.borrowSaleItem(saleItemID: id) {
 //         return Item(id: id, isCompleted: item.saleCompleted, price: item.salePrice, owner: address)
 //       }
@@ -79,7 +79,7 @@ export async function fetchMarketItem(address, id) {
   return fcl
     .send([
       fcl.script`
-      import KittyItemsMarket from 0xKittyItemsMarket
+      import CulturalItemsMarket from 0xCulturalItemsMarket
 
       pub struct Item {
         pub let id: UInt64
@@ -96,7 +96,7 @@ export async function fetchMarketItem(address, id) {
       }
 
       pub fun main(address: Address, id: UInt64): Item? {
-        if let collection = getAccount(address).getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath).borrow() {
+        if let collection = getAccount(address).getCapability<&CulturalItemsMarket.Collection{CulturalItemsMarket.CollectionPublic}>(CulturalItemsMarket.CollectionPublicPath).borrow() {
           if let item = collection.borrowSaleItem(saleItemID: id) {
             return Item(id: id, isCompleted: item.saleCompleted, price: item.salePrice, owner: address)
           }

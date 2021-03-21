@@ -12,13 +12,33 @@ function initCulturalItemsRouter(
     "/cultural-items/mint",
     [
       body("recipient").exists(),
-      body("typeId").isInt(),
       body("name").isString(),
+      body("description").isString(),
+      body("year").isString(),
+      body("country").isString(),
+      body("culturalSignificance").isString(),
+      body("metadata").exists(),
     ],
     validateRequest,
     async (req: Request, res: Response) => {
-      const { recipient, typeId, name } = req.body;
-      const tx = await culturalItemsService.mint(recipient, typeId, name);
+      const {
+        recipient,
+        name,
+        description,
+        year,
+        country,
+        culturalSignificance,
+        metadata,
+      } = req.body;
+      const tx = await culturalItemsService.mint(
+        recipient,
+        name,
+        description,
+        year,
+        country,
+        culturalSignificance,
+        metadata
+      );
       return res.send({
         transaction: tx,
       });

@@ -11,6 +11,7 @@ pub struct Item {
   pub let owner: Address
   pub let name: String
   pub let country: String
+  pub let year: String
   pub let metadata: {String: String}
 
   init(
@@ -18,12 +19,14 @@ pub struct Item {
     owner: Address,
     name: String,
     country: String,
+    year: String,
     metadata: {String: String}
   ) {
     self.id = id
     self.owner = owner
     self.name = name
     self.country = country
+    self.year = year
     self.metadata = metadata
   }
 }
@@ -36,6 +39,7 @@ pub fun fetch(address: Address, id: UInt64): Item? {
         owner: address,
         name: item.name,
         country: item.country,
+        year: item.year,
         metadata: item.metadata
       )
     }

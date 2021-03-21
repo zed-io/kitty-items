@@ -1,12 +1,12 @@
 import {useCurrentUser} from "../hooks/use-current-user.hook"
 import {useRef} from "react"
+import {Link as RouterLink} from "react-router-dom"
 import {
   Box,
   Button,
   Flex,
   Center,
   Heading,
-  HStack,
   IconButton,
   Text,
   useDisclosure,
@@ -15,6 +15,7 @@ import {
   DrawerContent,
   DrawerCloseButton,
   DrawerBody,
+  Link,
   // DrawerHeader,
 } from "@chakra-ui/react"
 import {HamburgerIcon} from "@chakra-ui/icons"
@@ -46,10 +47,10 @@ export function PageHeader() {
             onClick={onOpen}
           />
           <Center ml="4">
-            <HStack>
+            <Link to="/" as={RouterLink}>
               {/* <Image src={Logo} /> */}
               <Heading size="lg">Culture Exchange</Heading>
-            </HStack>
+            </Link>
           </Center>
         </Flex>
       </Box>

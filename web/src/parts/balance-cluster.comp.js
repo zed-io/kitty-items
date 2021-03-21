@@ -40,7 +40,7 @@ export function BalanceCluster({address}) {
         <Table size="sm">
           <Tbody>
             <Tr>
-              <Td>KIBBLE</Td>
+              <Td>Culture Token</Td>
               {kibbles.status === IDLE ? (
                 <Td isNumeric>{fmtKibbles(kibbles.balance)}</Td>
               ) : (
@@ -59,7 +59,7 @@ export function BalanceCluster({address}) {
             disabled={kibbles.status !== IDLE || !init.isInitialized}
             onClick={kibbles.mint}
           >
-            Request Meowr Kibbles
+            Request Culture Tokens
           </Button>
         </Flex>
       </Box>

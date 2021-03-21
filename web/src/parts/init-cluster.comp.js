@@ -42,16 +42,16 @@ export function InitCluster({address}) {
         <Table size="sm">
           <Tbody>
             <Tr>
-              <Td>Kibble</Td>
-              <Td>{fmtBool(init.Kibble)}</Td>
+              <Td>Culture Token</Td>
+              <Td>{fmtBool(init.CultureToken)}</Td>
             </Tr>
             <Tr>
-              <Td>Kitty Items</Td>
-              <Td>{fmtBool(init.KittyItems)}</Td>
+              <Td>Cultural Items</Td>
+              <Td>{fmtBool(init.CulturalItems)}</Td>
             </Tr>
             <Tr>
-              <Td>Kitty Items Market</Td>
-              <Td>{fmtBool(init.KittyItemsMarket)}</Td>
+              <Td>Cultural Items Market</Td>
+              <Td>{fmtBool(init.CulturalItemsMarket)}</Td>
             </Tr>
           </Tbody>
         </Table>

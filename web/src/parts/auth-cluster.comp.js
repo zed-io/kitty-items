@@ -24,7 +24,7 @@ export function AuthCluster() {
       <Flex>
         <HStack>
           <Image src={Logo} />
-          <Heading size="lg">Kitty Items</Heading>
+          <Heading size="lg">Culture Exchange</Heading>
         </HStack>
         <Spacer />
         <Center>
@@ -45,7 +45,7 @@ export function AuthCluster() {
         <Box p="2">
           <HStack>
             <Image src={Logo} />
-            <Heading size="lg">Kitty Items</Heading>
+            <Heading size="lg">Culture Exchange</Heading>
           </HStack>
         </Box>
         <Spacer />

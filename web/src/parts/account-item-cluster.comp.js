@@ -51,13 +51,16 @@ export function AccountItemCluster({address, id}) {
       <Td>
         <Text>{item.country}</Text>
       </Td>
+      <Td>
+        <Text>{item.year}</Text>
+      </Td>
       {/* <Td>
         <ItemImage type={item.type} />
       </Td> */}
       {cu.addr === address && (
         <>
           {!item.forSale ? (
-            <Td isNumeric maxW="50px">
+            <Td isNumeric maxW="100px">
               <Button
                 colorScheme="blue"
                 size="sm"
@@ -66,7 +69,7 @@ export function AccountItemCluster({address, id}) {
               >
                 <HStack>
                   {BUSY && <Spinner mr="2" size="xs" />}{" "}
-                  <Text>List for 10 KIBBLE</Text>
+                  <Text>List for 10 CULTURE TOKEN</Text>
                 </HStack>
               </Button>
             </Td>

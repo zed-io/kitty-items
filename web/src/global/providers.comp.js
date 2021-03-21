@@ -1,6 +1,6 @@
 import React from "react"
 import {RecoilRoot} from "recoil"
-import {HashRouter as Router} from "react-router-dom"
+import {BrowserRouter as Router} from "react-router-dom"
 import {ChakraProvider} from "@chakra-ui/react"
 import theme from "../theme.js"
 

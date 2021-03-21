@@ -16,6 +16,7 @@ import {
   DrawerCloseButton,
   DrawerBody,
   Link,
+  VStack,
   // DrawerHeader,
 } from "@chakra-ui/react"
 import {HamburgerIcon} from "@chakra-ui/icons"
@@ -23,7 +24,7 @@ import {HamburgerIcon} from "@chakra-ui/icons"
 // import Logo from "../svg/logo-kv.svg"
 
 export function PageHeader() {
-  const [user, loggedIn, {signUp, logIn}] = useCurrentUser()
+  const [user, loggedIn, {signUp, logIn, logOut}] = useCurrentUser()
   const {isOpen, onOpen, onClose} = useDisclosure()
   const drawerBtnRef = useRef()
 
@@ -34,6 +35,10 @@ export function PageHeader() {
   const onLogIn = () => {
     onClose()
     logIn()
+  }
+  const onLogOut = () => {
+    onClose()
+    logOut()
   }
 
   return (
@@ -67,7 +72,12 @@ export function PageHeader() {
             <DrawerBody>
               <Center h="100%">
                 {loggedIn ? (
-                  <Text>Welcome {user.addr}</Text>
+                  <VStack>
+                    <Text>Welcome {user.addr}</Text>
+                    <Button mr="4" colorScheme="blue" onClick={onLogOut}>
+                      Log Out
+                    </Button>
+                  </VStack>
                 ) : (
                   <>
                     <Button mr="4" colorScheme="blue" onClick={onSignUp}>

@@ -1,13 +1,12 @@
 import { BaseModel } from "./base";
 
-class KittyItem extends BaseModel {
+class CulturalItem extends BaseModel {
   id!: number;
-  type_id?: number;
   owner_address?: string;
 
   static get tableName() {
-    return "kitty_items";
+    return "cultural_items";
   }
 }
 
-export { KittyItem };
+export { CulturalItem };

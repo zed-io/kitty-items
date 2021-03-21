@@ -147,7 +147,7 @@ class MarketService {
     return SaleOffer.transaction(async (tx) => {
       const saleOffers = await SaleOffer.query(tx).insertGraphAndFetch([
         {
-          kitty_item: {
+          cultural_item: {
             id: itemId,
           },
           price: price,
